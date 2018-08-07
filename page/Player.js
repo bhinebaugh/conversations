@@ -14,6 +14,17 @@ export default class Player extends Component {
             renderChild: true,
         }
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+        this.focusListener = props.navigation.addListener('willFocus', payload =>{
+            console.log('Player focus', payload)
+            this.setState({ renderChild: true })
+          })
+    
+        this.blurListener = props.navigation.addListener('didBlur', payload => {
+            console.log('Player blur', payload)
+            this.setState({ renderChild: false })
+          })
+    
+    
       }
 
     componentDidMount() {
@@ -21,28 +32,22 @@ export default class Player extends Component {
         console.log('componentDidMount: ', this.state.renderChild);
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
-
-    componentDidUpdate() { // TODO 
-        console.log('componentDidUpdate: ');
-        if (!this.state.renderChild) {
-            this.setState({ renderChild: true });
-            console.log('componentDidUpdate: ', this.state.renderChild);
-        }
-    }
-
+        
     componentWillUnmount() {
         console.log('componentWillUnmount: ');
         BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
+        focusListener.remove();
+        blurListener.remove();
     }
-
+    
     handleBackButtonClick() {
         console.log('handleBackButtonClick: ');
-        this.setState({ renderChild: false });
+        // this.setState({ renderChild: false }); // this should now be redundant with the blur listener
         console.log('handleBackButtonClick: ', this.state.renderChild);
-        this.props.navigation.goBack(null);
+        this.props.navigation.navigate('Chooser');
         return true;
     }
-
+    
     restartYouTubePlayer(navigate) {
         return(
             this.state.renderChild ?
